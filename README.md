@@ -141,7 +141,7 @@ Do not publish sensitive Terraform state files.
 
 ### Terraform validation and plan
 
-![Terraform validation and plan](screenshots/terraform_validation.png)
+![Terraform validation and plan](screenshots/terraform_validations.png)
 
 
 ### Terraform apply and outputs
@@ -227,7 +227,9 @@ Record the actual result:
 
 ### Ansible connectivity test
 
-![Ansible connectivity test](screenshots/ansible_operations.png)
+![Ansible connectivity test](screenshots/ansible_operations_1.png)
+
+![Ansible connectivity test](screenshots/ansible_operations_ping_web_db.png)
 
 ### Ansible deployment recap
 
