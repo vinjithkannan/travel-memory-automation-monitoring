@@ -289,25 +289,7 @@ Only describe `/health` as an application health check if the deployed configura
 
 ---
 
-## 8. Validation and Testing
-
-Complete this table only after running each test. Use **Pass**, **Fail**, or **Not tested** and include the observed evidence.
-
-| Test | Result | Evidence / observation |
-|---|---|---|
-| Terraform validation | [Pass/Fail/Not tested] | [Output/screenshot] |
-| Terraform resources provisioned | [Pass/Fail/Not tested] | [Resource IDs/console] |
-| Ansible reaches both hosts | [Pass/Fail/Not tested] | [Ping result] |
-| MongoDB service active | [Pass/Fail/Not tested] | [Service status] |
-| Backend service active | [Pass/Fail/Not tested] | [Service status/logs] |
-| Frontend loads via HTTP | [Pass/Fail/Not tested] | [Browser/curl result] |
-| Frontend API requests succeed | [Pass/Fail/Not tested] | [Browser network/API evidence] |
-| Data persists in MongoDB | [Pass/Fail/Not tested] | [Create/read after refresh] |
-| Database is not publicly exposed | [Pass/Fail/Not tested] | [Private IP/security-group evidence] |
-
----
-
-## 9. Security Hardening
+## 8. Security Hardening
 
 - Restrict SSH access to the public host to the administrator's current public IP (`/32`).
 - Do not assign a public IP to the database instance.
@@ -321,7 +303,7 @@ Complete this table only after running each test. Use **Pass**, **Fail**, or **N
 
 ---
 
-## 10. Cost Management and Cleanup
+## 9. Cost Management and Cleanup
 
 AWS charges may apply to EC2 instances, EBS volumes, public IPv4 addresses, NAT Gateway uptime and data processing, and data transfer. The NAT Gateway can be a significant fixed-cost component. Check current AWS pricing and Cost Explorer; actual costs depend on region, uptime, and traffic.
 
@@ -340,7 +322,7 @@ Review the plan and confirm deletion. Verify that the EC2 instances, NAT Gateway
 
 ---
 
-## 11. Conclusion
+## 10. Conclusion
 
 This assignment demonstrates an infrastructure-as-code and configuration-management approach to deploying a MERN application on AWS. Terraform provisions the network and compute resources, while Ansible configures the database, web server, and application services.
 
@@ -350,7 +332,7 @@ Update this conclusion to reflect actual test results for frontend availability,
 
 ---
 
-## 12. Appendices
+## 11. Appendices
 
 ### Appendix A. Source Code Inventory
 
