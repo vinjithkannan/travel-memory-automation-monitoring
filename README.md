@@ -2,24 +2,6 @@
 
 ---
 
-## Document Guide
-
-1. [Objective and Scope](#1-objective-and-scope)
-2. [Solution Architecture](#2-solution-architecture)
-3. [Tools and Prerequisites](#3-tools-and-prerequisites)
-4. [Terraform Infrastructure Implementation](#4-terraform-infrastructure-implementation)
-5. [Network and Security Configuration](#5-network-and-security-configuration)
-6. [Ansible Configuration Management](#6-ansible-configuration-management)
-7. [MERN Application Deployment](#7-mern-application-deployment)
-8. [Validation and Testing](#8-validation-and-testing)
-9. [Security Hardening](#9-security-hardening)
-10. [Cost Management and Cleanup](#10-cost-management-and-cleanup)
-11. [Challenges and Resolutions](#11-challenges-and-resolutions)
-12. [Conclusion](#12-conclusion)
-13. [Appendices](#13-appendices)
-
----
-
 ## 1. Objective and Scope
 
 The objective of this assignment is to deploy the TravelMemory MERN application on AWS using Terraform for infrastructure provisioning and Ansible for configuration management and application deployment.
@@ -37,8 +19,6 @@ The implementation follows the assignment requirements for a VPC with public and
 - Configure environment variables and start the Node.js application.
 - Validate web access, service status, and database-backed behaviour.
 - Capture evidence and publish source files to GitHub.
-
-**Implementation status:** [Not started / In progress / Completed — update before submission]
 
 ---
 
@@ -93,11 +73,6 @@ Ansible: configures hosts and deploys software over SSH
 | Terraform | Control machine | Creates and tracks infrastructure |
 | Ansible | Control machine via SSH | Configures servers and deploys software |
 
-### Screenshot placeholder — Figure 1: Architecture diagram
-
-> **[ INSERT SCREENSHOT HERE — FIGURE 1 ]**  
-> Insert an architecture diagram showing the VPC, public/private subnets, Internet Gateway, NAT Gateway, web EC2, database EC2, and traffic flows.
-
 ---
 
 ## 3. Tools and Prerequisites
@@ -120,11 +95,6 @@ aws sts get-caller-identity --profile [profile-name]
 ```
 
 Do not include access keys, session tokens, private keys, or passwords in this report.
-
-### Screenshot placeholder — Figure 2: Tool versions and AWS identity
-
-> **[ INSERT SCREENSHOT HERE — FIGURE 2 ]**  
-> Insert a terminal screenshot showing the installed tool versions and successful AWS identity verification. Hide account details if required.
 
 ---
 
@@ -169,16 +139,15 @@ Review the plan before applying. Confirm that the web instance is in the public 
 
 Do not publish sensitive Terraform state files.
 
-### Screenshot placeholder — Figure 3: Terraform validation and plan
+### Terraform validation and plan
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 3 ]**  
-> Insert a screenshot showing successful `terraform validate` and the reviewed `terraform plan`.
+![Terraform validation and plan](screenshots/terraform_validation.png)
 
-### Screenshot placeholder — Figure 4: Terraform apply and outputs
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 4 ]**  
-> Insert a screenshot showing successful `terraform apply` and relevant outputs. Redact sensitive information where appropriate.
+### Terraform apply and outputs
 
+![Terraform apply](screenshots/terraform_infra_plan.png)
+![Terraform outputs](screenshots/terraform_infra_created_successfully.png)
 ---
 
 ## 5. Network and Security Configuration
@@ -196,20 +165,20 @@ The VPC contains one public and one private subnet. The public route table route
 
 The deployed security-group rules must match the actual Terraform configuration. Do not allow SSH or MongoDB from `0.0.0.0/0`. Use least-privilege IAM permissions.
 
-### Screenshot placeholder — Figure 5: VPC and subnet configuration
+### VPC and subnet configuration
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 5 ]**  
-> Insert an AWS VPC console screenshot showing the VPC and both subnets.
+![VPC and subnet configuration](screenshots/vpcs.png)
 
-### Screenshot placeholder — Figure 6: Route tables and gateways
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 6 ]**  
-> Insert screenshots showing the Internet Gateway, NAT Gateway, and routes for public/private subnets.
+### Route tables and gateways
 
-### Screenshot placeholder — Figure 7: Security groups and EC2 placement
+![Route tables and gateways](screenshots/route_tables.png)
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 7 ]**  
-> Insert security-group inbound rules and EC2 network placement.
+
+### Security groups and EC2 placement
+
+![Security groups](screenshots/instances_ip.png)
+![EC2 placement](screenshots/instances.png)
 
 ---
 
@@ -256,15 +225,13 @@ Record the actual result:
 - **Hosts reached:** [Web / Database]
 - **Failed tasks:** [Actual count]
 
-### Screenshot placeholder — Figure 8: Ansible connectivity test
+### Ansible connectivity test
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 8 ]**  
-> Insert a terminal screenshot showing successful Ansible ping for both hosts.
+![Ansible connectivity test](screenshots/ansible_operations.png)
 
-### Screenshot placeholder — Figure 9: Ansible deployment recap
+### Ansible deployment recap
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 9 ]**  
-> Insert the play recap showing the actual `ok`, `changed`, `unreachable`, and `failed` counts.
+![Ansible deployment recap](screenshots/ansible_deployment_web_db.png)
 
 ---
 
@@ -302,20 +269,21 @@ ansible web -b -m shell -a \
 
 Only describe `/health` as an application health check if the deployed configuration actually provides that endpoint.
 
-### Screenshot placeholder — Figure 10: Application service status
+### Application service status
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 10 ]**  
-> Insert a screenshot showing the backend systemd service and MongoDB service active.
+![Application service status](screenshots/app_api_response.png)
 
-### Screenshot placeholder — Figure 11: TravelMemory running in browser
+![Application service status](screenshots/app_api_status.png)
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 11 ]**  
-> Insert a browser screenshot of the deployed frontend accessed using the EC2 public IP.
+### TravelMemory running in browser
 
-### Screenshot placeholder — Figure 12: Database-backed create/read test
+![TravelMemory running in browser](screenshots/web_on_browser.png)
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 12 ]**  
-> Insert evidence of a sample memory created and still present after refreshing the page, if this operation was verified successfully.
+### Database-backed create/read test
+
+![Database-backed create](screenshots/web_on_browser_post.png)
+
+![Database-backed read test](screenshots/web_on_browser_get.png)
 
 ---
 
@@ -364,51 +332,27 @@ terraform destroy
 
 Review the plan and confirm deletion. Verify that the EC2 instances, NAT Gateway, Elastic IP, and resources created for this lab are removed. Keep local Terraform state until the destroy operation completes.
 
-### Screenshot placeholder — Figure 13: Cleanup evidence
+### Cleanup evidence
 
-> **[ INSERT SCREENSHOT HERE — FIGURE 13 ]**  
-> Insert a screenshot of successful `terraform destroy` or AWS console confirmation that the lab resources are removed.
-
----
-
-## 11. Challenges and Resolutions
-
-Record only issues actually encountered and how they were resolved.
-
-| Challenge | Root cause | Resolution |
-|---|---|---|
-| [Describe issue] | [Explain cause] | [State fix and evidence] |
-| [Describe issue] | [Explain cause] | [State fix and evidence] |
-| [Describe issue] | [Explain cause] | [State fix and evidence] |
+![Cleanup evidence](screenshots/terraform_cleanup.png)
 
 ---
 
-## 12. Conclusion
+## 11. Conclusion
 
 This assignment demonstrates an infrastructure-as-code and configuration-management approach to deploying a MERN application on AWS. Terraform provisions the network and compute resources, while Ansible configures the database, web server, and application services.
 
 Update this conclusion to reflect actual test results for frontend availability, backend-to-database connectivity, security checks, and cleanup.
 
-**Final outcome:** [Completed / Partially completed / In progress]
+**Final outcome:** [Completed]
 
 ---
 
-## 13. Appendices
+## 12. Appendices
 
 ### Appendix A. Source Code Inventory
 
 - **Terraform:** `versions.tf`, `provider.tf`, `variables.tf`, `terraform.tfvars.example`, `network.tf`, `security.tf`, `compute.tf`, `outputs.tf`.
 - **Ansible:** `ansible.cfg`, `inventory.ini.example`, `site.yml`, `group_vars/all.yml.example`, MongoDB role, web application role, and templates.
 - **Documentation:** `README.md` and this assignment report.
-- **GitHub repository:** [Insert repository URL].
-
-### Appendix B. Submission Checklist
-
-- [ ] Terraform source files included.
-- [ ] Ansible playbooks and role templates included.
-- [ ] No credentials, private keys, passwords, or Terraform state committed.
-- [ ] All screenshot placeholders replaced with genuine evidence.
-- [ ] Test results and implementation status updated.
-- [ ] Report reviewed and GitHub URL inserted.
-- [ ] Repository pushed successfully.
-- [ ] AWS lab resources destroyed or intentionally retained with cost awareness.
+- **GitHub repository:** https://github.com/vinjithkannan/travel-memory-automation-monitoring.git.
