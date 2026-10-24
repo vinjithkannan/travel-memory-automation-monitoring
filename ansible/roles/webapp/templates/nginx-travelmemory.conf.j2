@@ -1,0 +1,39 @@
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    root {{ app_root }}/source/frontend/build;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # The upstream app README uses backend port 3001. Keep the backend private.
+    # If frontend source uses /trip directly instead of /api/trip, the second
+    # location block proxies that route as well.
+    location /api/ {
+        proxy_pass http://127.0.0.1:{{ backend_port }}/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /trip {
+        proxy_pass http://127.0.0.1:{{ backend_port }}/trip;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "web server healthy\n";
+    }
+}

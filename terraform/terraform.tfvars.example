@@ -1,0 +1,8 @@
+aws_region      = "ap-south-1"
+aws_profile     = "mern-lab"
+project_name    = "travelmemory"
+my_ip_cidr      = "REPLACE_WITH_YOUR_PUBLIC_IP/32"
+public_key_path = "/home/YOUR_LINUX_USER/.ssh/mern-lab.pub"
+web_instance_type = "t3.micro"
+db_instance_type  = "t3.micro"
+root_volume_size  = 8

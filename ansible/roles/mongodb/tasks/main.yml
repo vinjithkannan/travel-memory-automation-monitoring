@@ -1,0 +1,81 @@
+---
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download MongoDB signing key
+  ansible.builtin.get_url:
+    url: https://pgp.mongodb.com/server-8.0.asc
+    dest: /etc/apt/keyrings/mongodb-server-8.0.asc
+    mode: "0644"
+
+- name: Add MongoDB 8.0 apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-8.0.asc ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/8.0 multiverse"
+    filename: mongodb-org-8.0
+    state: present
+
+- name: Install MongoDB
+  ansible.builtin.apt:
+    name: mongodb-org
+    state: present
+    update_cache: true
+
+- name: Ensure MongoDB is enabled and started before configuring authentication
+  ansible.builtin.systemd:
+    name: mongod
+    enabled: true
+    state: started
+
+- name: Create or verify MongoDB users (works on first run and subsequent runs)
+  ansible.builtin.shell: |
+    set -e
+    USER_ARGS=""
+    if grep -q 'authorization: enabled' /etc/mongod.conf 2>/dev/null; then
+      USER_ARGS="--username {{ mongo_admin_user }} --password {{ mongo_admin_password }} --authenticationDatabase admin"
+    fi
+    mongosh --quiet $USER_ARGS --eval '
+      const admin = db.getSiblingDB("admin");
+      if (!admin.getUser("{{ mongo_admin_user }}")) {
+        admin.createUser({
+          user: "{{ mongo_admin_user }}",
+          pwd: "{{ mongo_admin_password }}",
+          roles: [{ role: "root", db: "admin" }]
+        });
+      }
+      const appdb = db.getSiblingDB("travelmemory");
+      if (!appdb.getUser("{{ mongo_app_user }}")) {
+        appdb.createUser({
+          user: "{{ mongo_app_user }}",
+          pwd: "{{ mongo_app_password }}",
+          roles: [{ role: "readWrite", db: "travelmemory" }]
+        });
+      }
+    '
+  args:
+    executable: /bin/bash
+  no_log: true
+  changed_when: false
+
+- name: Configure MongoDB to listen only on localhost and its private interface, with authorization
+  ansible.builtin.template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart MongoDB
+
+- name: Apply MongoDB configuration immediately
+  ansible.builtin.meta: flush_handlers

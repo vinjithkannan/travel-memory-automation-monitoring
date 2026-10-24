@@ -1,0 +1,11 @@
+app_repo: "https://github.com/UnpredictablePrashant/TravelMemory.git"
+app_root: "/opt/travelmemory"
+backend_port: 3001
+
+# Replace these values before deployment. Never commit real secrets.
+mongo_app_user: "travelmemory_app"
+mongo_app_password: "REPLACE_WITH_A_LONG_RANDOM_PASSWORD"
+mongo_admin_user: "mongo_admin"
+mongo_admin_password: "REPLACE_WITH_ANOTHER_LONG_RANDOM_PASSWORD"
+
+# The playbook uses the DB host's private IP from inventory.

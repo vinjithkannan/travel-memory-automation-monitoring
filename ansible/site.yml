@@ -1,0 +1,12 @@
+---
+- name: Configure private MongoDB database server
+  hosts: db
+  become: true
+  roles:
+    - mongodb
+
+- name: Deploy TravelMemory web and application services
+  hosts: web
+  become: true
+  roles:
+    - webapp

@@ -1,0 +1,19 @@
+[Unit]
+Description=TravelMemory Express backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory={{ app_root }}/source/backend
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node {{ app_root }}/source/backend/index.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

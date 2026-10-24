@@ -1,0 +1,12 @@
+---
+- name: Restart TravelMemory
+  ansible.builtin.systemd:
+    name: travelmemory
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
+- name: Reload Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded

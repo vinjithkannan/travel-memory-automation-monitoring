@@ -1,0 +1,123 @@
+---
+- name: Install web server and build prerequisites
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - git
+      - curl
+      - ca-certificates
+      - build-essential
+    state: present
+    update_cache: true
+
+- name: Add Node.js 20 repository
+  ansible.builtin.shell: |
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install Node.js and npm
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: true
+
+- name: Create application root
+  ansible.builtin.file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+- name: Clone TravelMemory repository
+  ansible.builtin.git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_root }}/source"
+    version: main
+    update: true
+  become_user: ubuntu
+
+- name: Install backend npm dependencies
+  ansible.builtin.command: npm install --omit=dev
+  args:
+    chdir: "{{ app_root }}/source/backend"
+  become_user: ubuntu
+
+- name: Build MongoDB URI for application user
+  ansible.builtin.set_fact:
+    travelmemory_mongo_uri: "mongodb://{{ mongo_app_user }}:{{ mongo_app_password | urlencode }}@{{ hostvars[groups['db'][0]].ansible_host }}:27017/travelmemory?authSource=travelmemory"
+
+- name: Configure backend environment with database URI
+  ansible.builtin.template:
+    src: backend.env.j2
+    dest: "{{ app_root }}/source/backend/.env"
+    owner: ubuntu
+    group: ubuntu
+    mode: "0600"
+  vars:
+    mongo_uri: "{{ travelmemory_mongo_uri }}"
+  no_log: true
+  notify: Restart TravelMemory
+
+- name: Install frontend npm dependencies
+  ansible.builtin.command: npm install
+  args:
+    chdir: "{{ app_root }}/source/frontend"
+  become_user: ubuntu
+
+- name: Build frontend with relative API base URL
+  ansible.builtin.command: npm run build
+  args:
+    chdir: "{{ app_root }}/source/frontend"
+  environment:
+    REACT_APP_BACKEND_URL: "/api"
+  become_user: ubuntu
+
+- name: Install systemd service for backend
+  ansible.builtin.template:
+    src: travelmemory.service.j2
+    dest: /etc/systemd/system/travelmemory.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart TravelMemory
+
+- name: Configure Nginx reverse proxy
+  ansible.builtin.template:
+    src: nginx-travelmemory.conf.j2
+    dest: /etc/nginx/sites-available/travelmemory
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload Nginx
+
+- name: Enable Nginx site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/travelmemory
+    dest: /etc/nginx/sites-enabled/travelmemory
+    state: link
+  notify: Reload Nginx
+
+- name: Disable default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload Nginx
+
+- name: Ensure backend service is enabled and started
+  ansible.builtin.systemd:
+    name: travelmemory
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Validate Nginx configuration
+  ansible.builtin.command: nginx -t
+  changed_when: false
+
+- name: Ensure Nginx is enabled and started
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started
